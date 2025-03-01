@@ -1,4 +1,6 @@
 const listOfVids = document.getElementById("listOfRequests");
+let sortBy = "newFirst";
+let searchTerm = "";
 
 const vidComponent = (vidInfo, iSprepend) => {
   const vidContainer = document.createElement("div");
@@ -45,7 +47,7 @@ const vidComponent = (vidInfo, iSprepend) => {
   listenerComponent(vidInfo);
 };
 
-const loadAllVidReq = function (sortBy = "topVotedFirst", searchTerm = "") {
+const loadAllVidReq = function (sortBy, searchTerm = "") {
   fetch(
     `http://localhost:7777/video-request?sortBy=${sortBy}&searchTerm=${searchTerm}`
   )
@@ -66,15 +68,19 @@ document.addEventListener("DOMContentLoaded", function () {
   const sortByElements = document.querySelectorAll("[id*=sort_by_]");
   const searchBox = document.getElementById("search_box");
 
+  // loading videos content
+
   loadAllVidReq();
+
+    // sorting
 
   sortByElements.forEach((element) => {
     element.addEventListener("click", function (e) {
       e.preventDefault();
-      const sortBy = this.querySelector("input");
-      loadAllVidReq(sortBy.value);
+      sortBy = this.querySelector("input").value;
+      loadAllVidReq(sortBy, searchTerm);
       this.classList.add("active");
-      sortBy.value === "topVotedFirst"
+      sortBy === "topVotedFirst"
         ? document.getElementById("sort_by_new").classList.remove("active")
         : document.getElementById("sort_by_top").classList.remove("active");
     });
@@ -83,13 +89,13 @@ document.addEventListener("DOMContentLoaded", function () {
   // searching
 
   searchBox.addEventListener("input", (e) => {
-    const searchTerm = e.target.value;
-    loadAllVidReq(undefined, searchTerm);
+    searchTerm = e.target.value;
+    loadAllVidReq(sortBy, searchTerm);
   });
 
   // fetching data already existed in DB
 
-  loadAllVidReq();
+  // loadAllVidReq();
 
   // adding new video post
 
